@@ -39,18 +39,15 @@ def get_alpha(p):
     return 0.7213 / (1.0 + 1.079 / (1 << p))
 
 
-def get_rho(w, max_width):
-    # count bit length
-    # bit_length will not  work until python version >= 2.7
-    import sys
-    if sys.version_info >= (2, 7):
-        w_bit_length = w.bit_length()
-    else:
-        w_bit_length = len(bin(w)) -2
-        if w_bit_length < 0:
-            w_bit_length -= 1
+def bit_length(w):
+    if hasattr(w, 'bit_length'):
+        return w.bit_length()
+    w_bit_length = len(bin(w)) - (w > 0 and 2 or 3)
+    return w_bit_length
 
-    rho = max_width - w_bit_length + 1
+
+def get_rho(w, max_width):
+    rho = max_width - bit_length(w) + 1
 
     if rho <= 0:
         raise ValueError('w overflow')
